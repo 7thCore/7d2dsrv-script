@@ -21,7 +21,7 @@
 
 #Static script variables
 export NAME="7d2dSrv" #Name of the tmux session.
-export VERSION="1.0-8" #Package and script version.
+export VERSION="1.0-9" #Package and script version.
 export SERVICE_NAME="7d2dsrv" #Name of the service files, user, script and script log.
 export LOG_DIR="/srv/$SERVICE_NAME/logs" #Location of the script's log files.
 export LOG_STRUCTURE="$LOG_DIR/$(date +"%Y")/$(date +"%m")/$(date +"%d")" #Folder structure of the script's log files.
@@ -849,9 +849,9 @@ script_backup() {
 			EOF
 			script_backup_create_folder $SERVER_INSTANCE
 			cd "$TMPFS_DIR/$SERVER_INSTANCE"
-			tar -cpvzf $BCKP_DIR/$SERVER_INSTANCE/$BCKP_STRUCTURE/$(date +"%Y%m%d%H%M")_$SERVER_INSTANCE.tar.gz $TMPFS_DIR/$SERVER_INSTANCE/
+			tar -cpvzf $BCKP_DIR/$SERVER_INSTANCE/$BCKP_STRUCTURE/$(date +"%Y%m%d%H%M")_$SERVER_INSTANCE.tar.gz $TMPFS_DIR/$SERVER_INSTANCE/UserDataFolder $TMPFS_DIR/$SERVER_INSTANCE/SaveGameFolder $TMPFS_DIR/$SERVER_INSTANCE/serverconfig.xml
 			curl telnet://127.0.0.1:8081 <<- EOF
-			say "say Server backup complete."
+			say "Server backup complete."
 			exit
 			EOF
 		fi
@@ -862,14 +862,14 @@ script_backup() {
 			echo "$(date +"%Y-%m-%d %H:%M:%S") [$VERSION] [$NAME] (Autobackup) Server $SERVER_INSTANCE is not running." | tee -a "$LOG_SCRIPT"
 		elif [[ "$(systemctl --user show -p ActiveState --value $SERVER_SERVICE)" == "active" ]] && [[ "$(systemctl --user show -p UnitFileState --value $SERVER_SERVICE)" == "enabled" ]]; then
 			curl telnet://127.0.0.1:8081 <<- EOF
-			say "say Server backup in progress."
+			say "Server backup in progress."
 			exit
 			EOF
 			script_backup_create_folder $SERVER_INSTANCE
 			cd "$SRV_DIR/$SERVER_INSTANCE"
-			tar -cpvzf $BCKP_DIR/$SERVER_INSTANCE/$BCKP_STRUCTURE/$(date +"%Y%m%d%H%M")_$SERVER_INSTANCE.tar.gz $SRV_DIR/$SERVER_INSTANCE/
+			tar -cpvzf $BCKP_DIR/$SERVER_INSTANCE/$BCKP_STRUCTURE/$(date +"%Y%m%d%H%M")_$SERVER_INSTANCE.tar.gz $SRV_DIR/$SERVER_INSTANCE/UserDataFolder $SRV_DIR/$SERVER_INSTANCE/SaveGameFolder $SRV_DIR/$SERVER_INSTANCE/serverconfig.xml
 			curl telnet://127.0.0.1:8081 <<- EOF
-			say "say Server backup complete."
+			say "Server backup complete."
 			exit
 			EOF
 		fi
