@@ -16,7 +16,7 @@
 
 pkgname=7d2dsrv-script
 pkgver=1.0
-pkgrel=8
+pkgrel=9
 pkgdesc='7 Days to Die server script for running the server on linux.'
 arch=('x86_64')
 license=('GPL3')
@@ -51,7 +51,7 @@ source=('bash_profile'
         '7d2dsrv-tmpfs@.service')
 sha256sums=('f1e2f643b81b27d16fe79e0563e39c597ce42621ae7c2433fd5b70f1eeab5d63'
             '0491f13de4db45c73e61955dddb3f08a30adec6692622c9e3858d465573731a3'
-            '85bf3edfb6b8dac90ab0fd6740018e05903ebed76801c4c35ecf76ca80945593'
+            'e489401c085365d467fcc57eb46859c6706891c891b45977bf26d93142689408'
             '231dd14403fa38f40a0df6f395b5e70e0dbad6fa0cadbfb54b0005c33df20771'
             '11ab259f31f7dcab6af2e7714450e7ca218d072e866c3ae4677f159cd452b234'
             '302e410768b8940d5fdcd2ec2f731a95329d00bcdff164f4814e28efc1fd11b2'
