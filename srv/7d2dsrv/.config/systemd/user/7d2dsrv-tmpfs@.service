@@ -1,0 +1,53 @@
+#    Copyright (C) 2022 7thCore
+#    This file is part of 7d2dSrv.
+#
+#    7d2dSrv is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    7d2dSrv is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[Unit]
+Description=7d2dSrv TmpFs Server Service
+Requires=7d2dsrv-mkdir-tmpfs@%i.service
+After=network.target srv-7d2dsrv-tmpfs.mount 7d2dsrv-mkdir-tmpfs@%i.service
+Conflicts=7d2dsrv@%i.service
+StartLimitBurst=3
+StartLimitIntervalSec=300
+StartLimitAction=none
+OnFailure=7d2dsrv-send-notification@.service
+
+[Service]
+Environment=export LD_LIBRARY_PATH=/srv/7d2dsrv/tmpfs/%i/
+Type=forking
+KillMode=none
+WorkingDirectory=/srv/7d2dsrv/tmpfs/%i
+ExecStartPre=/usr/bin/7d2dsrv-script pre-start %i tmpfs
+ExecStartPre=/usr/bin/7d2dsrv-script server_tmux_install %i
+ExecStart=/usr/bin/tmux -f /tmp/%u-%i-tmux.conf -L %u-%i-tmux.sock new-session -d -s 7d2dSrv '/srv/7d2dsrv/tmpfs/%i/7DaysToDieServer.x86_64 -logfile /srv/7d2dsrv/tmpfs/%i/7DaysToDieServer_Data/output_log__`date +%Y-%m-%d__%H-%M-%S`.txt -quit -batchmode -nographics -dedicated -configfile=/srv/7d2dsrv/tmpfs/%i/serverconfig.xml'
+ExecStartPost=/usr/bin/sleep 10
+ExecStartPost=/usr/bin/tmux -f /tmp/%u-%i-telnet-tmux.conf -L %u-%i-telnet-tmux.sock new-session -d -s 7d2dSrv-Telnet '/usr/bin/telnet 127.0.0.1 8081'
+ExecStartPost=/usr/bin/7d2dsrv post-start %i
+ExecStop=/usr/bin/7d2dsrv-script pre-stop %i
+ExecStop=/usr/bin/tmux -L %u-%i-telnet-tmux.sock send-keys -t 7d2dSrv-Telnet.0 'say "SERVER SHUTTING DOWN IN 10!"' ENTER
+ExecStop=/usr/bin/sleep 5
+ExecStop=/usr/bin/tmux -L %u-%i-telnet-tmux.sock send-keys -t 7d2dSrv-Telnet.0 '"say SERVER SHUTTING DOWN IN 5!"' ENTER
+ExecStop=/usr/bin/sleep 5
+ExecStop=/usr/bin/tmux -L %u-%i-telnet-tmux.sock send-keys -t 7d2dSrv-Telnet.0 '"say SERVER SHUTTING DOWN NOW!"' ENTER
+ExecStop=/usr/bin/tmux -L %u-%i-telnet-tmux.sock send-keys -t 7d2dSrv-Telnet.0 'saveworld' ENTER
+ExecStop=/usr/bin/tmux -L %u-%i-telnet-tmux.sock send-keys -t 7d2dSrv-Telnet.0 'shutdown' ENTER
+ExecStopPost=/usr/bin/7d2dsrv-script post-stop %i tmpfs
+TimeoutStartSec=infinity
+TimeoutStopSec=120
+RestartSec=10
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

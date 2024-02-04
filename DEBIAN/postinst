@@ -1,0 +1,12 @@
+getent group 7d2dsrv >/dev/null || groupadd --system 7d2dsrv
+getent passwd 7d2dsrv >/dev/null || useradd --system -g 7d2dsrv -d /srv/7d2dsrv/ -s /bin/bash 7d2dsrv
+
+install -dm700 srv/7d2dsrv/backups
+install -dm700 srv/7d2dsrv/config
+install -dm700 srv/7d2dsrv/logs
+install -dm700 srv/7d2dsrv/server
+install -dm700 srv/7d2dsrv/tmpfs
+install -dm700 srv/7d2dsrv/updates
+chown -R 7d2dsrv:7d2dsrv srv/7d2dsrv
+loginctl enable-linger 7d2dsrv
+systemctl start user@$(id -u 7d2dsrv).service

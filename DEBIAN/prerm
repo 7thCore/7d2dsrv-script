@@ -1,0 +1,2 @@
+loginctl disable-linger 7d2dsrv
+systemctl stop user@$(id -u 7d2dsrv).service
