@@ -1,0 +1,19 @@
+post_install() {
+	getent group 7d2dsrv >/dev/null || groupadd --system 7d2dsrv
+	getent passwd 7d2dsrv >/dev/null || useradd --system -g 7d2dsrv -d /srv/7d2dsrv/ -s /bin/bash 7d2dsrv
+
+	chown -R 7d2dsrv:7d2dsrv srv/7d2dsrv
+	loginctl enable-linger 7d2dsrv
+	systemctl start user@$(id -u 7d2dsrv).service
+}
+
+post_upgrade() {
+	chown -R 7d2dsrv:7d2dsrv srv/7d2dsrv/.config/systemd/user
+	chown 7d2dsrv:7d2dsrv srv/7d2dsrv/*
+}
+
+post_remove() {
+	loginctl disable-linger 7d2dsrv
+	systemctl stop user@$(id -u 7d2dsrv).service
+	userdel --remove 7d2dsrv
+}
